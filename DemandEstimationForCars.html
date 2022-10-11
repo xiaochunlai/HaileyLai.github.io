@@ -194,9 +194,9 @@ pre code {
 </div>
 <div id="analysis-task" class="section level2">
 <h2>Analysis task</h2>
-<p>A. Use log-log Regression to estimate the relationship between quantity and price of cars B. Conduct Benefit Segmentation via Cluster Analysis of Conjoint Part-Utilities<br />
-C. Conduct a priori segmentation<br />
-D. Simulate market shares for different product-line market scenarios</p>
+<p>A. Use log-log Regression to estimate the relationship between quantity and price of cars<br />
+B. Reverse-engineer the optimal price calculation process to recover costs of rival<br />
+C. Calculate cross-elasticities and competitive effects</p>
 <pre class="r"><code>#Set up
 library(&quot;lfe&quot;)</code></pre>
 <pre><code>## Loading required package: Matrix</code></pre>
@@ -426,7 +426,7 @@ reg=felm(log(qu)~loc+ac+he+engdpc|factor(co):factor(ye)+factor(ma)|(log(eurpr)~w
 <div id="part-b-recover-costs" class="section level2">
 <h2>Part B : Recover costs</h2>
 <ul>
-<li>Estimate the unit cost of cars</li>
+<li>Estimate the production cost of your rivals to assess the potential competitiveness of the market</li>
 <li>Find the pattern between price and costs</li>
 </ul>
 <pre class="r"><code>#Demand function
@@ -465,10 +465,11 @@ reg=felm(log(qu)~loc+ac+he+engdpc|factor(co):factor(ye)+factor(ma)|(log(eurpr)~w
 ## F-statistic(full model):6.515 on 2331 and 6832 DF, p-value: &lt; 2.2e-16 
 ## F-statistic(proj model): 69.29 on 5 and 6832 DF, p-value: &lt; 2.2e-16 
 ## F-statistic(endog. vars):27.83 on 1 and 6832 DF, p-value: 1.362e-07</code></pre>
-<pre class="r"><code>#Compare among 5 years, same car model, same market
+<p>After knowing the demand function, we usually can calculate the optimal price of a firm with a given unit cost. Now that knowing the price, we are going to reverse-engineer this exercise to estimate the costs of rivals and have an idea about how rivals set prices optimally given their cost. In this way, we can assess the potential competitiveness of the market.</p>
+<pre class="r"><code># Compare among 5 years, same car model, same market
+# Access the values of control variables and fixed effects
 
 #For example, year 84, car model alfa 33, market 1
-#Access the values of control variables and fixed effects
 loc = cardata[cardata$ye == 84 &amp; cardata$ma == 1 &amp; cardata$type == &quot;alfa 33&quot;, ]$loc
 ac = as.numeric(cardata[cardata$ye == 84 &amp; cardata$ma == 1 &amp; cardata$type == &quot;alfa 33&quot;, ]$ac)
 he = as.numeric(cardata[cardata$ye == 84 &amp; cardata$ma == 1 &amp; cardata$type == &quot;alfa 33&quot;, ]$he)
@@ -651,6 +652,7 @@ differentCarModelsCosts </code></pre>
 ## 3    84       1 alfa giulietta 7560.56  5798
 ## 4    84       1        alfasud 7266.54  5573</code></pre>
 <pre class="r"><code>#Patterns: price and cost
+
 differentYearsCosts$cost_price_ratio = differentYearsCosts$Costs / differentYearsCosts$Prices
 
 differentMarketsCosts$cost_price_ratio = differentMarketsCosts$Costs / differentMarketsCosts$Prices
@@ -679,8 +681,8 @@ print(differentYearsCosts)</code></pre>
 <p>A specific pattern we found is that the cost-price ratio (cost/price) is 76.7% across years, markets, and car models.<br />
 This means that the demand is reasonable cause car companies will want to keep their products profitable for each car type though some type might have larger costs. Last but not least, 76.7% is a reasonable profitable ratio for low to middle price cars based on the reference of Toyota’s 2021 gross margin.</p>
 </div>
-<div id="part-c-cross-elasticities-and-competitive-effects" class="section level2">
-<h2>Part C : Cross-elasticities and competitive effects</h2>
+<div id="part-c-calculate-cross-elasticities-and-competitive-effects" class="section level2">
+<h2>Part C : Calculate Cross-elasticities and competitive effects</h2>
 <ul>
 <li>Consider cross-price elasticities in the log-log regression</li>
 </ul>
